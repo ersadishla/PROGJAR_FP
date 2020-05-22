@@ -5,7 +5,6 @@ import asyncore
 import logging
 import time
 
-
 class BackendList:
     def __init__(self):
         self.last_port = 9001
@@ -80,7 +79,15 @@ class Server(asyncore.dispatcher):
             #menentukan ke server mana request akan diteruskan
             bs = self.bservers.getserver()
             logging.warning("koneksi dari {} diteruskan ke {}" . format(addr, bs))
-            backend = Backend(bs)
+            
+            vacant = True
+            while(vacant):
+                try:
+                    backend = Backend(bs)
+                    break
+                except ConnectionRefusedError:
+                    bs = self.bservers.getserver()
+                    continue
 
             #mendapatkan handler dan socket dari client
             handler = ProcessTheClient(sock)
