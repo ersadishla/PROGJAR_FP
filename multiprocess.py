@@ -1,14 +1,15 @@
-from socket import *
+from typing import List
 import socket
 import threading
 import time
 import sys
 import logging
+import psutil
 from multiprocessing import Process, Queue
 
 from http import HttpServer
 
-q = Queue()
+q: Queue = Queue()
 httpserver = HttpServer()
 
 
@@ -51,7 +52,7 @@ class Worker(Process):
     def __init__(self, id: int, queue: Queue):
         super().__init__()
         self.queue = queue
-        self.clients = []
+        self.clients: List[ProcessTheClient] = []
         self.id = id
 
     def run(self) -> None:
@@ -60,8 +61,8 @@ class Worker(Process):
             # print(self.id, data)
 
             clt = ProcessTheClient(data[0], data[1])
-            clt.run()
-            # self.clients.append(clt)
+            clt.start()
+            self.clients.append(clt)
 
 
 class WorkerManager:
@@ -96,9 +97,13 @@ class Server(threading.Thread):
 
 
 if __name__ == "__main__":
-    portnumber = 44444
+    portnumber = 44445
+    try:
+        worker_count = psutil.cpu_count()
+    except:
+        worker_count = 8
 
-    wm = WorkerManager(8)
+    wm = WorkerManager(worker_count)
     wm.generate()
 
     try:
