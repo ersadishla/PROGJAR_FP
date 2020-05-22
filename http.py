@@ -27,7 +27,8 @@ class HttpServer:
 		response_headers=''
 		for i in resp:
 			response_headers="{}{}" . format(response_headers,i)
-		#menggabungkan resp menjadi satu string dan menggabungkan dengan messagebody yang berupa bytes
+		#menggabungkan resp menjadi satu string
+		#menggabungkan dengan messagebody yang berupa bytes
 		#response harus berupa bytes
 		#message body harus diubah dulu menjadi bytes
 		if (type(messagebody) is not bytes):
@@ -60,12 +61,14 @@ class HttpServer:
 				return self.response(400,'Bad Request','',{})
 		except IndexError:
 			return self.response(400,'Bad Request','',{})
+
 	def http_get(self,object_address,headers):
 		files = glob('./*')
 		thedir='.'
 		if thedir+object_address not in files:
 			return self.response(404,'Not Found','',{})
-		fp = open(thedir+object_address,'rb') #rb => artinya adalah read dalam bentuk binary
+		fp = open(thedir+object_address,'rb') 
+		#rb => artinya adalah read dalam bentuk binary
 		#harus membaca dalam bentuk byte dan BINARY
 		isi = fp.read()
 		
@@ -76,6 +79,7 @@ class HttpServer:
 		headers['Content-type']=content_type
 		
 		return self.response(200,'OK',isi,headers)
+
 	def http_post(self,object_address,headers):
 		headers ={}
 		isi = "kosong"
